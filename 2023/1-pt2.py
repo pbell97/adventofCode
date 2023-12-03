@@ -1,11 +1,12 @@
-filePath = "./1input.txt"
+filePath = "./1-input.txt"
 
 # Get input from file
 lines = []
 with open(filePath, "r") as f:
     lines = f.readlines()
 
-possibleNumbers = ["one", "two", "three", "four", "five", "six", "seven", "eight", "nine"]
+possibleNumbers = ["one", "two", "three", "four",
+                   "five", "six", "seven", "eight", "nine"]
 numbers = []
 
 for line in lines:
