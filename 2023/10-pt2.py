@@ -97,6 +97,9 @@ while not foundS:
         foundS = True
 
 
+# Do first one, og ray casting
+# ONly three pipes to check for: |, ....
+
 pipes.insert(0, sCoords)
 # Ray casting algorithm
 # innerTiles = []
