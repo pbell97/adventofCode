@@ -9,15 +9,16 @@ with open(filePath, "r") as f:
 lines = [x.strip('\n') for x in lines]
 
 # Sample input
-# lines = '''???.### 1,1,3
-# .??..??...?##. 1,1,3
-# ?#?#?#?#?#?#?#? 1,3,1,6
-# ????.#...#... 4,1,1
-# ????.######..#####. 1,6,5
-# ?###???????? 3,2,1'''.split('\n')
+lines = '''???.### 1,1,3
+.??..??...?##. 1,1,3
+?#?#?#?#?#?#?#? 1,3,1,6
+????.#...#... 4,1,1
+????.######..#####. 1,6,5
+?###???????? 3,2,1'''.split('\n')
 
 springs = [(x.split()[0], [int(y) for y in x.split()[1].split(',')] if len(x.split())>1 else []) for x in lines]
 
+# TODO: Multiple input by 5
 
 def matchesLine(originalLine, givenLine):
     for i,char in enumerate(originalLine):
@@ -55,8 +56,10 @@ def FindCombinations(springLine):
         if matchesLine(springLine[0], combo) and satisfiesRules(combo, springLine[1]):
             validCombos.append(combo)
     
-    
     return len(list(set(validCombos)))
+
+
+# TODO: Thinking you need to break it down into groups of '?', find the permutations for those and recursively loop through them, while still keeping the real spaces in between  ( might not work for all '?' input tho)
 
 
 bigCount = 0
