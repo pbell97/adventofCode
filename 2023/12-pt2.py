@@ -1,5 +1,5 @@
 import itertools
-filePath = "/Users/patrickbell/Documents/repos/adventofCode/2023/12-input.txt"
+filePath = "./12-input.txt"
 
 # Get input from file
 lines = []
