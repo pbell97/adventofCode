@@ -3,8 +3,8 @@ filePath = "./10-input.txt"
 
 # Get input from file
 lines = []
-# with open(filePath, "r") as f:
-#     lines = f.readlines()
+with open(filePath, "r") as f:
+    lines = f.readlines()
 
 lines = [x.strip('\n') for x in lines]
 
@@ -82,8 +82,6 @@ else:
 
 # If almost works, edit the S to be whatever it should be
 
-    
-
 
 # Get all pipes
 foundS = False
@@ -97,47 +95,21 @@ while not foundS:
         foundS = True
 
 
-# Do first one, og ray casting
-# ONly three pipes to check for: |, ....
+# Only care about if pipe is facing north
+validPipes = ['|', 'J', 'L']    # NOTE: May need to include 'S' if your S is pretending to be one of these
 
 pipes.insert(0, sCoords)
 # Ray casting algorithm
-# innerTiles = []
-# for i in range(len(lines)):
-#     shouldCount = False
-#     for j in range(len(lines[0])):
-#         if (i,j) in pipes:
-#             shouldCount = not shouldCount
-#         elif shouldCount:
-#             innerTiles.append((i,j))
-
-# Ray casting #2
 innerTiles = []
-
-innerRowTiles = []
 for i in range(len(lines)):
     shouldCount = False
     for j in range(len(lines[0])):
-        if (i,j) in pipes and lines[i][j] == "|":
+        if (i,j) in pipes and lines[i][j] in validPipes:
             shouldCount = not shouldCount
-        elif shouldCount:
-            innerRowTiles.append((i,j))
-innerColTiles = []
-for i in range(len(lines[0])):
-    shouldCount = False
-    for j in range(len(lines)):
-        if (j,i) in pipes and lines[j][i] == "-":
-            shouldCount = not shouldCount
-        elif shouldCount:
-            innerColTiles.append((j,i))
+        elif shouldCount and (i,j) not in pipes:
+            innerTiles.append((i,j))
 
-innerTiles = [x for x in innerRowTiles if x in innerColTiles]
-
-
-
-
-print(f"Inside tile counts: {len(innerTiles)}")
-
+print(f"Inside tile counts: {len(set(innerTiles))}")
 
 with open("10-testout.txt", 'w') as f:
     for i in range(len(lines)):
@@ -146,13 +118,8 @@ with open("10-testout.txt", 'w') as f:
             if (i,j) in pipes:
                 row.append(lines[i][j])
             elif (i,j) in innerTiles:
-                row.append('O')
+                row.append('I')
             else:
                 row.append('.')
         row.append("\n")
         f.write("".join(row))
-
-
-# Could go through rows and do Ray casting but only count '|' and then go thru cols and only car about '-', get intersection
-    # Convert S to | if above and below are in pipes, or "-" if left and right are pipes
-    # OR do this second part by hand and manually change the S? or debug and add it in
