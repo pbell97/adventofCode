@@ -1,5 +1,5 @@
 import itertools
-filePath = "./13-input.txt"
+filePath = "/Users/patrickbell/Documents/repos/adventofCode/2023/13-input.txt"
 
 # Get input from file
 lines = []
@@ -9,21 +9,21 @@ with open(filePath, "r") as f:
 lines = [x.strip('\n') for x in lines]
 
 # Sample input
-lines = '''#.##..##.
-..#.##.#.
-##......#
-##......#
-..#.##.#.
-..##..##.
-#.#.##.#.
+# lines = '''#.##..##.
+# ..#.##.#.
+# ##......#
+# ##......#
+# ..#.##.#.
+# ..##..##.
+# #.#.##.#.
 
-#...##..#
-#....#..#
-..##..###
-#####.##.
-#####.##.
-..##..###
-#....#..#'''.split('\n')
+# #...##..#
+# #....#..#
+# ..##..###
+# #####.##.
+# #####.##.
+# ..##..###
+# #....#..#'''.split('\n')
 
 # Assemble puzzles
 puzzles = []
@@ -56,30 +56,23 @@ def GetVerticalMirrorColumns(puzzle):
                 result = first.startswith(second)
             checks[lineIndex].append(result)
 
-    # Change this to find all columns where all are true except one, then loop thru those and apply the 'MatchesAllButOne' function and then return that if true
+    # Finds where only one in each column didn't have a match and assumes that is the one
     for columnIndex in range(len(checks[0])):
-        isMirror = True
-        for row in checks:
-            isMirror = checks[checks.index(row)][columnIndex] and isMirror
-        if isMirror:
+        falses = []
+        trues = []
+        for rowIndex, row in enumerate(checks):
+            if checks[rowIndex][columnIndex]:
+                trues.append((rowIndex, columnIndex))
+            else:
+                falses.append((rowIndex, columnIndex))
+
+        if len(falses) == 1:
             return columnIndex + 1
+        
     return 0
-
-def MatchesAllButOne(first, second):
-    shorter, longer = first, second
-    if len(shorter)>len(longer):
-        shorter, longer = longer, shorter
-    
-    missMatches = 0
-    for i, char in enumerate(shorter):
-        if char != longer[i]:
-            missMatches += 1
-
-    return missMatches == 1
 
 count = 0
 for i,puzzle in enumerate(puzzles):
-    print(f"Checking {i}")
     verticalCount = GetVerticalMirrorColumns(puzzle)
     flippedPuzzle = ["".join(x) for x in zip(*puzzle)]
     horizontalCount = GetVerticalMirrorColumns(flippedPuzzle)
