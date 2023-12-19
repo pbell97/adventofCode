@@ -1,4 +1,4 @@
-filePath = "/Users/patrickbell/Documents/repos/adventofCode/2023/16-input.txt"
+filePath = "./16-input.txt"
 
 # Get input from file
 lines = []
