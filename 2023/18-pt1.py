@@ -1,5 +1,5 @@
 import re
-filePath = "/Users/patrickbell/Documents/repos/adventofCode/2023/18-input.txt"
+filePath = "D:/repos\Testbed\AdventOfCode/2023/18-input.txt"
 
 # Get input from file
 lines = []
@@ -52,7 +52,6 @@ for instruction in instructions:
 
 
 WriteOut(grid)
-input("")
 
 firstLineIndex = None
 for i,line in enumerate(grid):
@@ -67,67 +66,36 @@ for i in range(len(grid)-1,0,-1):
 
 
 
+# Flood fill starting diagonally under the start node
+startSpot = (900,900)
+queue = [startSpot]
+count = 0
+while len(queue) > 0:
+    count += 1
+    location = queue.pop()
+    grid[location[0]][location[1]] = "I"
+    # Down
+    if grid[location[0]+1][location[1]] not in ["#","I"] and (location[0]+1,location[1]) not in queue:
+        queue.insert(0, (location[0]+1,location[1]))
+    # Up
+    if grid[location[0]-1][location[1]] not in ["#","I"] and (location[0]-1,location[1]) not in queue:
+        queue.insert(0, (location[0]-1,location[1]))
+    # Left
+    if grid[location[0]][location[1]-1] not in ["#","I"] and (location[0],location[1]-1) not in queue:
+        queue.insert(0, (location[0],location[1]-1))
+    # Right
+    if grid[location[0]][location[1]+1] not in ["#","I"] and (location[0],location[1]+1) not in queue:
+        queue.insert(0, (location[0],location[1]+1))
+    queue = list(set(queue))
 
-for lineIndex, line in enumerate(grid):
-    if lineIndex == firstLineIndex or lineIndex == lastLineIndex:
-        continue
-    if "#" not in line:
-        continue
-
-    lineString = "".join(line)
-    groups = re.split(r'(\#)',lineString)
-    newGroups = []
-    for group in groups:
-        if '.' in group:
-            newGroups.append(group)
-        elif group == "#" and len(newGroups) > 0 and "#" in newGroups[-1]:
-            newGroups[-1] += group
-        elif group == "":
-            continue
-        else:
-            newGroups += group
-    groups = newGroups
-
-    inShape = "#" in groups[0]
-    newLine = ""
-
-    if not inShape:
-        newLine += groups[0]
-        groups = groups[1:]
-
-
-    # TODO: Just look up flood fill...
-        # Get input location, change to I, then add all neighbors to a queue if they aren't already in the queue and aren't a '#'
-        # Start node can be diagonally under the actual start position...
-
-    for group in groups:
-        if "#" in group:
-            inShape = not inShape
-
-        if inShape:
-            newLine += "I"*len(group)
-        else:
-            newLine += group
-    grid[lineIndex] = newLine
-
-    # if lineIndex == firstLineIndex or lineIndex == lastLineIndex:
-    #     continue
-    # previousChar = ""
-    # isOnLine = False
-    # isInShape = False
-    # for charIndex, char in enumerate(line):
-    #     if char == "#" and grid[lineIndex][charIndex+1] != "#":
-    #         isInShape = not isInShape
-    #     elif isInShape:
-    #         grid[lineIndex][charIndex] = "I"
-
-    if (lineIndex > 850):
+    if (count%25000 == 0):
         WriteOut(grid)
-        input("")
+        print(f"Printing at count = {count}")
                 
+WriteOut(grid)
 counts = sum([line.count("I") + line.count("#") for line in grid])
-print(f"Total cound: {counts}")
+print(f"Total count: {counts}")
 
 
-    
+# TODO: Look into shoe string formula
 
