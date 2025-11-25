@@ -27,7 +27,6 @@ for line in lines:
 # 'Before' means means the given number needs to appear before those numbers in the 'before' list
 # 'After' means means the given number needs to appear after those numbers in the 'after' list
 
-total = 0
 incorrectUpdates = []
 
 for update in updates:
@@ -45,6 +44,7 @@ for update in updates:
             break
     if not isValid:
         incorrectUpdates.append(update)
+
 
 # Doing: Could expand the 'before' and 'after' list to include ALL numbers
 
@@ -76,18 +76,18 @@ def SortByRules(a, b):
     else: 
         return 1
 
-# print(incorrectUpdates[0])
-
-
+total = 0
 for update in incorrectUpdates:
     isValid = True
     sortedUpdate = sorted(update, key=cmp_to_key(SortByRules))
-    
+    print(f"Before: {update}")
+    print(f"After: {sortedUpdate}")
     total += int(sortedUpdate[len(sortedUpdate)//2])
-    # print(sortedUpdate)
 
     
-
+tempL = rules.keys()
+tempLSorted = sorted(tempL, key=cmp_to_key(SortByRules))
+print(tempLSorted)
 
 
 print(total)
