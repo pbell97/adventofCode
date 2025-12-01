@@ -26,10 +26,12 @@ int main(int argc, char* argv[]) {
     }
 
     // Read input files
-    string currentPath = filesystem::current_path();
+    string currentPath = filesystem::current_path().string();
     string inputPath = currentPath + (readSample ? "/sampleInput.txt" : "/input.txt");
     vector<string> input = ReadFile(inputPath);
 
     // Run puzzle solution
     PuzzleSolution(input, additionalArguments);
 }
+
+// g++ -o pt1.exe .\pt1.cpp ..\Utilities.cpp

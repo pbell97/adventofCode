@@ -92,5 +92,7 @@ int main() {
 
 // g++ -O2 -o myprogram main.cpp
 
+// vscode: $env:PATH = "C:\msys64\ucrt64\bin;$env:PATH"; g++ --version
+
 // Refresher: https://www.mauriciopoppe.com/notes/computer-science/programming-languages/cpp-refresher/
 // Template setup: https://github.com/Bogdanp/awesome-advent-of-code?tab=readme-ov-file#project-templates

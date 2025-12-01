@@ -54,7 +54,7 @@ int main(int argc, char* argv[]) {
         return 0;
     }
 
-    string currentPath = filesystem::current_path();
+    string currentPath = filesystem::current_path().string();
     string newFolderPath = currentPath + "/" + argv[1];
 
     if (filesystem::exists(newFolderPath)) {
