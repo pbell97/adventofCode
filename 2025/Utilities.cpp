@@ -1,7 +1,7 @@
+#include "Utilities.h"
+
 #include <fstream>
 #include <iostream>
-#include <string>
-#include <vector>
 
 using namespace std;
 
@@ -21,6 +21,18 @@ vector<string> ReadFile(string filePath) {
     return lines;
 }
 
+// Writes an array of vector string data to a new file
+void WriteToFile(vector<string> inputText, string filePath) {
+    ofstream newFile(filePath);
+
+    for (int i = 0; i < inputText.size(); i++) {
+        newFile << inputText[i] << "\n";
+    }
+
+    newFile.close();
+}
+
+// Splits a string into a vector based on delimiter
 vector<string> SplitString(string inputString, string delimiter) {
     size_t index = inputString.find(delimiter);
 
@@ -40,21 +52,21 @@ vector<string> SplitString(string inputString, string delimiter) {
     return outVector;
 }
 
-int main() {
-    // Read a file into a vector of strings per line
-    const string filePath = "D:/repos/Testbed/adventofCode/2025/sample.txt";
-    vector<string> lines = ReadFile(filePath);
-    for (int i = 0; i < lines.size(); i++) {
-        string line = lines.at(i);
-    }
+// int main() {
+//     // Read a file into a vector of strings per line
+//     const string filePath = "D:/repos/Testbed/adventofCode/2025/sample.txt";
+//     vector<string> lines = ReadFile(filePath);
+//     for (int i = 0; i < lines.size(); i++) {
+//         string line = lines.at(i);
+//     }
 
-    // Split a string
-    string sampleString = ",Abc,,123,One,Two,Three";
-    vector<string> split = SplitString(sampleString, "-");
-    cout << "size of vector split " << split.size() << "\n";
-    for (int i = 0; i < split.size(); i++) {
-        cout << split.at(i) + " \n";
-    }
+//     // Split a string
+//     string sampleString = ",Abc,,123,One,Two,Three";
+//     vector<string> split = SplitString(sampleString, "-");
+//     cout << "size of vector split " << split.size() << "\n";
+//     for (int i = 0; i < split.size(); i++) {
+//         cout << split.at(i) + " \n";
+//     }
 
-    return 0;
-}
+//     return 0;
+// }

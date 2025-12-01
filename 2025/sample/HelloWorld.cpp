@@ -21,6 +21,32 @@ class Person {
     void introduce() const { cout << "Hi, I'm " << name << " and I'm " << age << " years old." << endl; }
 };
 
+int* createNumber() {
+    int num = 42;  // ❌ Dies when function ends
+    return &num;   // ❌ Dangling pointer!
+
+    int* num = new int(42);  // ✅ Lives on heap
+    return num;              // ✅ Valid (but remember to delete!)
+
+    // Large array on stack - might cause stack overflow
+    int largeArray[1000000];  // ❌ Stack space limited (~1-8MB)
+
+    // Large array on heap - uses system memory
+    int* largeArray = new int[1000000];  // ✅ Heap space much larger
+
+    void processData(int size) {
+        int arr[size];  // ❌ Not standard C++
+
+        int* arr = new int[size];  // ✅ Dynamic allocation
+        // ... use arr
+        delete[] arr;
+    }
+
+    // Dynamic memory allocation (that isn't a vector) can't be done without pointers because
+    // something like int arr[numberHere] needs to know numberHere at compileTime. So instead
+    // provision via pointers. It also puts it on heap insted of stack
+}
+
 int main() {
     // Basic output
     cout << "Welcome to C++!" << endl;
