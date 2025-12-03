@@ -35,3 +35,4 @@ int main(int argc, char* argv[]) {
 }
 
 // g++ -o pt1.exe .\pt1.cpp ..\Utilities.cpp
+// g++ -std=c++23 -o pt1 ./pt1.cpp ../../2025/Utilities.cpp
