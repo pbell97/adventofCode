@@ -25,15 +25,15 @@ void PuzzleSolution(vector<string> input, vector<string> arguments) {
 
     double runningSumOfSquaredDiff = 0;
     for (int i = 0; i < input.size(); i++) {
-        int diff = double(stoi(input[i])) - mean;
+        double diff = double(stoi(input[i])) - mean;
         runningSumOfSquaredDiff += pow(diff, 2);
     }
 
     double stdDev = sqrt(runningSumOfSquaredDiff / (input.size() - 1));
     cout << "StdDev " << stdDev << "\n";
 
-    int lowerBound = mean - stdDev * 2;
-    int upperBound = mean + stdDev * 2;
+    double lowerBound = mean - stdDev * 2;
+    double upperBound = mean + stdDev * 2;
 
     cout << "Upper: " << upperBound << "\n";
     cout << "Lower: " << lowerBound << "\n";
@@ -48,7 +48,9 @@ void PuzzleSolution(vector<string> input, vector<string> arguments) {
     cout << "Sum: " << sumOfNumsGreaterThanTwoStdDevs << "\n";
 }
 
-// Answer: 23229758
+// Answer: 23229758 - Int for bounds and 'diff'
+// Or      22862783 - Double for bounds and 'diff' - Probably most accurate
+// Or      22699828 - Int for bounds and double for diff
 
 int main(int argc, char* argv[]) {
     // Decide between sample or actual input
