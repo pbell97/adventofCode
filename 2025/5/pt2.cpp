@@ -34,44 +34,33 @@ void PuzzleSolution(vector<string> input, vector<string> arguments) {
             availableIngredients.push_back(stoll(input[i]));
         }
     }
-    sort(ranges.begin(), ranges.end(), [](Range a, Range b) { return a.start < b.start; });
-
-    // 3-5
-    // 10-14
-    // 12-18
-    // 16-20
+    sort(ranges.begin(), ranges.end(),
+         [](Range a, Range b) { return a.start != b.start ? a.start < b.start : a.end < b.start; });
 
     vector<Range> combinedRanges;
     int currentRangeCount = combinedRanges.size();
     for (int i = 0; i < ranges.size(); i++) {
         Range currentRange = ranges[i];
-        Range nextRange = i < (ranges.size() - 1) ? ranges[i + 1] : Range(LLONG_MAX, LLONG_MAX);
         Range previouslyCombinedRange =
             combinedRanges.size() != 0 ? combinedRanges[combinedRanges.size() - 1] : Range(0, 0);
 
-        // If current range is already overlapping with previously combined range - Edit the end of the previously
-        // combined range
-        if (currentRange.start <= previouslyCombinedRange.end && currentRange.end >= previouslyCombinedRange.end) {
+        // cStart < comEnd && cEnd > comEnd = change comEnd to cEnd
+        if (currentRange.start < previouslyCombinedRange.end && currentRange.end > previouslyCombinedRange.end) {
             combinedRanges[combinedRanges.size() - 1].end = currentRange.end;
         }
-
-        // If Current range overlaps but doesn't exceed next range, combine the two and skip the next one
-        else if (currentRange.end > nextRange.start && nextRange.end >= currentRange.end) {
-            combinedRanges.push_back(Range(currentRange.start, nextRange.end));
-            i++;
+        // cStart < comEnd && cEnd <= comEnd = do nothing
+        else if (currentRange.start < previouslyCombinedRange.end && currentRange.end <= previouslyCombinedRange.end) {
+            continue;
         }
-
-        // If current range overlaps and exceeds next range - skip the next one
-        else if (currentRange.end > nextRange.end) {
-            i++;
+        // cStart == comEnd = change comEnd to cEnd
+        else if (currentRange.start == previouslyCombinedRange.end) {
+            combinedRanges[combinedRanges.size() - 1].end = currentRange.end;
         }
-
-        // If current range is completely encompassing existing range - skip
-        else if (currentRange.start <= previouslyCombinedRange.end && currentRange.end <= previouslyCombinedRange.end) {
-            i++;
+        // cStart > comEnd = addToList
+        else if (currentRange.start > previouslyCombinedRange.end) {
+            combinedRanges.push_back(currentRange);
         }
-
-        // If its completely on its own - add it
+        // else addToList
         else {
             combinedRanges.push_back(currentRange);
         }
@@ -97,6 +86,25 @@ void PuzzleSolution(vector<string> input, vector<string> arguments) {
 // 289051156279448
 // 286445690950063
 // 283745584309001
+// 278239308095537
+// 342433357244012 <- Correct
+
+// 3-8 x
+// 3-10 x
+// 4-6 x
+// 4-10 x
+// 5-11 x
+// 11-12 x
+// 14-16 x
+// 16-16 x
+// 18-18
+
+// 3-12, 14-16, 18-18
+// cStart < comEnd && cEnd > comEnd = change comEnd
+// cStart < comEnd && cEnd <= comEnd = do nothing
+// cStart == comEnd = change comEnd to cEnd
+// cStart > comEnd = addToList
+// else addToList
 
 int main(int argc, char* argv[]) {
     // Decide between sample or actual input
