@@ -3,46 +3,50 @@
 #include <fstream>
 #include <iostream>
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 #include "../Utilities.h"
 using namespace std;
 
-// Every time it hits one,
+// Memoization - if already been to a node, just save its' # of unqiue combos beneath it
 
-// Recursive function
-// Every time it hits one first go left, then go right, if its the bottom then increment a pointer value count
+unordered_map<string, long long> memoed;
 
 // Row and col are where it is right now when passed in
-void Search(vector<string>& input, int row, int col, long long& finalCount) {
-    if (finalCount % 100000000 == 0) {
-        auto now = chrono::system_clock::now();
-        auto time_t = chrono::system_clock::to_time_t(now);
-        cout << "Current Count: " << finalCount << " at " << ctime(&time_t);
+long long Search(vector<string>& input, int row, int col) {
+    string key = to_string(row) + "," + to_string(col);
+
+    if (memoed.find(key) != memoed.end()) {
+        return memoed[key];
     }
 
-    if (row == input.size() - 1) {
-        finalCount += 1;
-        return;
+    if (row == (input.size() - 1)) {
+        memoed[key] = 1;
+        return 1;
     }
+
+    long long currentTotal = 0;
     if (input[row + 1][col] == '.') {
-        Search(input, row + 1, col, finalCount);
+        currentTotal += Search(input, row + 1, col);
     } else if (input[row + 1][col] == '^') {
-        Search(input, row + 1, col - 1, finalCount);  // Left
-        Search(input, row + 1, col + 1, finalCount);  // Right
+        currentTotal += Search(input, row + 1, col - 1);  // Left
+        currentTotal += Search(input, row + 1, col + 1);  // Right
     }
+
+    memoed[key] = currentTotal;
+    return currentTotal;
 }
 
 void PuzzleSolution(vector<string> input, vector<string> arguments) {
     // Your puzzle solution here
     int startingCol = input[0].find('S');
     input[1][startingCol] = '|';
-    long long combinations = 0;
     int runs = 0;
 
-    Search(input, 1, startingCol, combinations);
+    long long result = Search(input, 1, startingCol);
 
-    cout << "Combos: " << combinations << endl;
+    cout << "Combos: " << result << endl;
 }
 
 int main(int argc, char* argv[]) {
@@ -70,3 +74,5 @@ int main(int argc, char* argv[]) {
 
 // g++ -o pt1.exe .\pt1.cpp ..\Utilities.cpp
 // g++ -std=c++23 -o pt1 ./pt1.cpp ../../2025/Utilities.cpp
+
+// Answer: 13883459503480
