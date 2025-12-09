@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <cmath>
 #include <filesystem>
 #include <fstream>
@@ -15,16 +16,20 @@ struct Coordinates {
     int y;
     int z;
 
+    double ClosestCoordDistance = 99999999.0;
+    string ClosestCoord;
+
     Coordinates(int _x, int _y, int _z) : x(_x), y(_y), z(_z) {}
 
     string Key() { return to_string(x) + "," + to_string(y) + "," + to_string(z); }
 
-    long Distance(Coordinates otherCoord) {
+    double Distance(Coordinates otherCoord) {
         return sqrt((pow((x - otherCoord.x), 2) + pow((y - otherCoord.y), 2) + pow((z - otherCoord.z), 2)));
     }
 };
 
-// TODO: Would it make any difference to start by finding the shortest pairs FIRST before combining them?
+// TODO: need to evaluate 'limit' usage and how it combines vectors. There shouldn't be individuals listed in current
+// print setup
 
 void PuzzleSolution(vector<string> input, vector<string> arguments) {
     // Your puzzle solution here
@@ -34,48 +39,84 @@ void PuzzleSolution(vector<string> input, vector<string> arguments) {
         coords.push_back(Coordinates(stoi(split[0]), stoi(split[1]), stoi(split[2])));
     }
 
-    unordered_map<string, int> coordToCircuitMap;
-    unordered_map<int, vector<string>> circuitToCoordsMap;
-
+    // Find closest coord for each coord
     for (int i = 0; i < coords.size(); i++) {
-        Coordinates currentCoord = coords[i];
-        long closestDistance = 999999999;
-        Coordinates closestCoord = Coordinates(-999999999, -999999999, -999999999);
+        Coordinates& currentCoord = coords[i];
 
         for (int j = 0; j < coords.size(); j++) {
             if (j == i) {
                 continue;
             }
-            long distance = currentCoord.Distance(coords[j]);
-            if (distance < closestDistance) {
-                closestDistance = distance;
-                closestCoord = coords[j];
+            double distance = currentCoord.Distance(coords[j]);
+            if (distance < currentCoord.ClosestCoordDistance) {
+                currentCoord.ClosestCoordDistance = distance;
+                currentCoord.ClosestCoord = coords[j].Key();
+            }
+        }
+    }
+
+    // Find shortest pair
+    sort(coords.begin(), coords.end(),
+         [](const Coordinates& a, const Coordinates& b) { return a.ClosestCoordDistance < b.ClosestCoordDistance; });
+
+    for (int i = 0; i < coords.size(); i++) {
+        cout << coords[i].Key() << " is " << coords[i].ClosestCoordDistance << " away from " << coords[i].ClosestCoord
+             << endl;
+    }
+
+    cout << endl;
+
+    // Make some circuits
+    unordered_map<string, int> coordToCircuitMap;
+    unordered_map<int, vector<string>> circuitToCoordsMap;
+    int limit = 10;
+    for (int i = 0; i < coords.size(); i++) {
+        Coordinates currentCoord = coords[i];
+        Coordinates* closestCoord = nullptr;
+        for (auto& potentialMatch : coords) {
+            if (potentialMatch.Key() == coords[i].ClosestCoord) {
+                closestCoord = &potentialMatch;
+                break;
             }
         }
 
         bool currentIsInCircuit = coordToCircuitMap.find(currentCoord.Key()) != coordToCircuitMap.end();
-        bool closestIsInCircuit = coordToCircuitMap.find(closestCoord.Key()) != coordToCircuitMap.end();
+        bool closestIsInCircuit = coordToCircuitMap.find(closestCoord->Key()) != coordToCircuitMap.end();
+
+        // If in same circuit already, skip
+        if (currentIsInCircuit && closestIsInCircuit &&
+            coordToCircuitMap[currentCoord.Key()] == coordToCircuitMap[closestCoord->Key()]) {
+            cout << "Skipping " << currentCoord.Key() << " and " << closestCoord->Key() << " - already in same circuit"
+                 << endl;
+            continue;
+        }
 
         // If this coord already in circuit and closest isn't, add closest to circuit
         if (currentIsInCircuit && !closestIsInCircuit) {
             int circuitNumber = coordToCircuitMap[currentCoord.Key()];
-            coordToCircuitMap[closestCoord.Key()] = circuitNumber;
-            circuitToCoordsMap[circuitNumber].push_back(closestCoord.Key());
+            cout << "Adding " << closestCoord->Key() << " to existing circuit " << circuitNumber << " (connected to "
+                 << currentCoord.Key() << ")" << endl;
+            coordToCircuitMap[closestCoord->Key()] = circuitNumber;
+            circuitToCoordsMap[circuitNumber].push_back(closestCoord->Key());
         }
 
         // If this coord not in a circuit and closest isn't, make a new circuit and add both
         if (!currentIsInCircuit && !closestIsInCircuit) {
             int circuitNumber = circuitToCoordsMap.size() + 1;
+            cout << "Creating new circuit " << circuitNumber << " connecting " << currentCoord.Key() << " to "
+                 << closestCoord->Key() << endl;
             coordToCircuitMap[currentCoord.Key()] = circuitNumber;
-            coordToCircuitMap[closestCoord.Key()] = circuitNumber;
+            coordToCircuitMap[closestCoord->Key()] = circuitNumber;
             circuitToCoordsMap[circuitNumber].push_back(currentCoord.Key());
-            circuitToCoordsMap[circuitNumber].push_back(closestCoord.Key());
+            circuitToCoordsMap[circuitNumber].push_back(closestCoord->Key());
         }
 
         // If this coord already in circuit and closest is, combine circuits
-        if (currentIsInCircuit && !closestIsInCircuit) {
+        if (currentIsInCircuit && closestIsInCircuit) {
             int circuitNumber = coordToCircuitMap[currentCoord.Key()];
-            int circuitToCombineNumber = coordToCircuitMap[closestCoord.Key()];
+            int circuitToCombineNumber = coordToCircuitMap[closestCoord->Key()];
+            cout << "Combining circuits " << circuitNumber << " and " << circuitToCombineNumber << " (connecting "
+                 << currentCoord.Key() << " to " << closestCoord->Key() << ")" << endl;
 
             // Update each coord in old circuit to new one
             for (int k = 0; k < circuitToCoordsMap[circuitToCombineNumber].size(); k++) {
@@ -87,18 +128,36 @@ void PuzzleSolution(vector<string> input, vector<string> arguments) {
                                                      circuitToCoordsMap[circuitToCombineNumber].begin(),
                                                      circuitToCoordsMap[circuitToCombineNumber].end());
             circuitToCoordsMap[circuitToCombineNumber].clear();
+            circuitToCoordsMap.erase(circuitToCombineNumber);
         }
 
         // If this coord not in a circuit and closests is, add currentCoord to existing circuit
         if (!currentIsInCircuit && closestIsInCircuit) {
-            int circuitNumber = coordToCircuitMap[closestCoord.Key()];
+            int circuitNumber = coordToCircuitMap[closestCoord->Key()];
+            cout << "Adding " << currentCoord.Key() << " to existing circuit " << circuitNumber << " (connected to "
+                 << closestCoord->Key() << ")" << endl;
             coordToCircuitMap[currentCoord.Key()] = circuitNumber;
             circuitToCoordsMap[circuitNumber].push_back(currentCoord.Key());
         }
+
+        int currentNumOfConnections = 0;
+        for (const auto& circuit : circuitToCoordsMap) {
+            currentNumOfConnections += circuit.second.size() - 1;
+        }
+        if (currentNumOfConnections == limit) {
+            cout << "BREAKING" << endl;
+            break;
+        } else {
+            cout << "Current num of connections: " << currentNumOfConnections << endl;
+        }
     }
 
+    cout << endl;
     for (const auto& item : circuitToCoordsMap) {
         cout << "Circuit #" << item.first << " contains " << item.second.size() << " items" << endl;
+        for (const auto& item2 : item.second) {
+            cout << "\t- " << item2 << endl;
+        }
     }
 }
 
