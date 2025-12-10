@@ -28,8 +28,8 @@ struct Coordinates {
     }
 };
 
-// TODO: need to evaluate 'limit' usage and how it combines vectors. There shouldn't be individuals listed in current
-// print setup
+// ERROR: NEED TO GET LIST OF ALL CONNECTIONS POSSIBLE. IF YOU GET TO A JUNCTION AND ITS ALREADY BEEN CONNECTED
+// PREVIUSLY THEN CONNECT IT TO THE NEXT CLOSEST NEED TO LOOP THROUGH POSSILBE CONNECTION INSTEAD OF JUST COORDS
 
 void PuzzleSolution(vector<string> input, vector<string> arguments) {
     // Your puzzle solution here
