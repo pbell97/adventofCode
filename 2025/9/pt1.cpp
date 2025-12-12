@@ -7,8 +7,35 @@
 #include "../Utilities.h"
 using namespace std;
 
+struct Coordinate {
+    long long x;
+    long long y;
+
+    Coordinate(long long _x, long long _y) : x(_x), y(_y) {}
+
+    long long BoxArea(Coordinate otherCoord) const { return abs(x - otherCoord.x + 1.0) * abs(y - otherCoord.y + 1.0); }
+};
+
 void PuzzleSolution(vector<string> input, vector<string> arguments) {
     // Your puzzle solution here
+    long long largestArea = 0;
+    vector<Coordinate> coords;
+    for (long long i = 0; i < input.size(); i++) {
+        vector<string> coord = SplitString(input[i], ",");
+        coords.push_back(Coordinate(stoll(coord[0]), stoll(coord[1])));
+    }
+
+    for (const auto& coord : coords) {
+        for (const auto& otherCoord : coords) {
+            long long area = coord.BoxArea(otherCoord);
+            if (area > largestArea) {
+                largestArea = area;
+                cout << area << " is larger" << endl;
+            }
+        }
+    }
+
+    cout << "Largest area: " << largestArea << endl;
 }
 
 int main(int argc, char* argv[]) {

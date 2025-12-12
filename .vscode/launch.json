@@ -5,7 +5,7 @@
       "name": "Debug C++ - Day 10",
       "type": "cppdbg",
       "request": "launch",
-      "program": "${workspaceFolder}/2025/10/pt1.exe",
+      "program": "${workspaceFolder}/2025/10/pt2.exe",
       "args": ["sample"],
       "stopAtEntry": false,
       "cwd": "${workspaceFolder}/2025/10",

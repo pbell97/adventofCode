@@ -9,8 +9,8 @@
         "-g",
         "-std=c++23",
         "-o",
-        "pt1.exe",
-        "pt1.cpp",
+        "pt2.exe",
+        "pt2.cpp",
         "../Utilities.cpp"
       ],
       "options": {
