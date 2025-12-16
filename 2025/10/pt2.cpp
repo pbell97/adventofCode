@@ -89,84 +89,44 @@ void PrintMachines(vector<Machine> machines) {
     }
 }
 
-void generatePermutations(const vector<int>& buttonIndices, int maxLength, vector<int>& current,
-                          vector<vector<int>>& result) {
-    // Add current permutation if it's not empty and within max length
-    if (!current.empty() && current.size() <= maxLength) {
-        result.push_back(current);
-    }
+// (3) (1,3) (2) (2,3) (0,2) (0,1) {3,5,4,7}
 
-    // Stop if we've reached max length
-    if (current.size() == maxLength) {
-        return;
-    }
+// {3,5,4,7}, {0,0,0,0}, {}, 9999999, Machine
+void Recurssive(vector<uint16_t>& desiredJoltage, vector<uint16_t> currentJoltage, vector<int> buttonPushes,
+                int& fewestButtonPresses, Machine& machine) {
+    // 0
+    for (int i = 0; i < desiredJoltage.size(); i++) {
+        int buttonIndexToPress = i;
+        // 3
+        vector<uint16_t> button = machine.Buttons[buttonIndexToPress];
 
-    for (int buttonIndex : buttonIndices) {
-        current.push_back(buttonIndex);
-        generatePermutations(buttonIndices, maxLength, current, result);
-        current.pop_back();
+        // {0,0,0,0}
+        vector<uint16_t> tempJoltage = currentJoltage;
+        bool isTooBig = false;
+
+        // {0,0,0,1}
+        for (const auto& index : button) {
+            currentJoltage[index] += 1;
+            if (currentJoltage[index] > desiredJoltage[index]) {
+                isTooBig = true;
+                break;
+            }
+            if (!isTooBig) {
+            }
+        }
     }
 }
 
-vector<vector<int>> getAllPermutations(const vector<int>& buttonIndices, int maxLength) {
-    vector<vector<int>> result;
-    vector<int> current;
-    generatePermutations(buttonIndices, maxLength, current, result);
-    return result;
-}
+// (3) (1,3) (2) (2,3) (0,2) (0,1) {3,5,4,7}
 
 void PuzzleSolution(vector<string> input, vector<string> arguments) {
     vector<Machine> machines = ParseMachinesFromInput(input);
     // PrintMachines(machines);
     long buttonPresses = 0;
 
-    // TODO: Split this into several threads
-
-    // TODO: Make the permutations large, and controllable by variable. Possible have it increment until it finds the
-    // right combo
-
-    // TODO: Could determine which buttons aren't necessary, prune to an extent
-    int maxPermutationLength = 12;
-    int buttonPushes = 0;
     for (const auto& machine : machines) {
-        // Create list of buttons by index
-        vector<int> buttonIndices(machine.Buttons.size());
-        iota(buttonIndices.begin(), buttonIndices.end(), 0);
-
-        vector<vector<int>> perms = getAllPermutations(buttonIndices, maxPermutationLength);
-        sort(perms.begin(), perms.end(), [](const auto& a, const auto& b) { return a.size() < b.size(); });
-        bool machineMatchFound = false;
-        for (const auto& buttonIndiceCombo : perms) {
-            // TODO: Make this a vector of 0s of length equal to joltage
-            vector<int> currentJoltage(machine.Joltages.size(), 0);
-
-            // TODO: Loop thru each button and its subsequent actions and add to correct spot in the vector
-            for (const auto& buttonIndex : buttonIndiceCombo) {
-                vector<uint16_t> buttons = machine.Buttons[buttonIndex];
-                for (const auto& button : buttons) {
-                    currentJoltage[button] += 1;
-                }
-            }
-
-            // Check if currentJoltage matches machine.Joltages
-            bool matches = true;
-            for (size_t i = 0; i < currentJoltage.size(); i++) {
-                if (currentJoltage[i] != machine.Joltages[i]) {
-                    matches = false;
-                    break;
-                }
-            }
-
-            if (matches) {
-                buttonPushes += buttonIndiceCombo.size();
-                cout << "Matched with button presses of " << buttonIndiceCombo.size() << endl;
-                machineMatchFound = true;
-                break;
-            }
-        }
-        if (!machineMatchFound) {
-            cout << "NEVER FOUND A MATCH FOR " << machine.DesiredBitOutCome << endl;
-        }
+        int numOfVariables = machine.Joltages.size();
+        for
     }
 
     cout << "Total button presses: " << buttonPresses << endl;
